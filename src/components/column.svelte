@@ -9,17 +9,11 @@
   // TODO: clear code
   const dispatch = createEventDispatcher();
 
-  let gameOver = false;
-  let top;
-  let bottom;
-  let left;
-  let timer;
   let column;
-  let removed = false;
-  let gap = 200;
-  let rand = randomInteger(1, size.height - gap);
 
-	let move = tweened(size.width, {
+
+  // console.log(size.width)
+  let columnMove = tweened(size.width, {
 		duration: 5000,
 		easing: linear
   });
@@ -28,48 +22,139 @@
     console.log('game column',value)
 
     if (value) {
-      // removeColumn()
-      runColumn();
+      $columnMove = -column.getBoundingClientRect().width;
     } else {
-		  // game.stop();
-      // removeColumn();
-      // $ move = null
+      columnMove = tweened(size.width, {
+        duration: 5000,
+        easing: linear
+      });
     }
   })
 
-  const unsubscribeMove = move.subscribe(value => {
-    // console.log(value, size.width / 10)
+  const unsubscribeMove = columnMove.subscribe(value => {
 
-    // console.log(value)
+    console.log('columnMove', value, )
 
     if (value <= (size.width / 10) + 50) {
 
-      if ($gravity <  rand || $gravity + 50 > rand + gap) {
-        console.log('gameOver')
-
-        dispatch('gameOver')
-        $move = value;
-        // return false
-      }
-
-      removed = true;
     }
 
-    if (value <= -60) removeColumn();
+    
+    // console.log(value, size.width / 10)
+
+    // console.log('unsubscribeMove', value)
+
+    // // return false
+
+    // if (value <= (size.width / 10) + 50) {
+
+    //   if ($gravity <  rand || $gravity + 50 > rand + gap) {
+    //     console.log('gameOver')
+    //     game.stop();
+    //     dispatch('gameOver')
+    //     // $move = value;
+    //     // return false
+    //   }
+
+    //   // removed = true;
+    // }
+
+    // if (value <= -60) {
+      
+    //   column.remove();
+    //   createCol = true;
+    //   // $move = size.width;
+    // }
   })
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+  let gameOver = false;
+  let top;
+  let bottom;
+  let left;
+  let timer;
+  
+  let removed = false;
+  let gap = 200;
+  let rand = randomInteger(1, size.height - gap);
+
+  let createCol = false;
+
+	// let move = tweened(size.width, {
+	// 	duration: 5000,
+	// 	easing: linear
+  // });
+
+  // const unSubscribeGame = game.subscribe(value => {
+  //   console.log('game column',value)
+
+  //   if (value) {
+  //     // removeColumn() 
+  //     console.log('123123123')
+  //     $move = size.width;
+  //     runColumn();
+  //   } else {
+  //     // $move = 0 ;
+	// 	  // game.stop();
+  //     // removeColumn();
+  //     // $ move = null
+  //   }
+  //     // column.remove();
+  // })
+
+  // const unsubscribeMove = move.subscribe(value => {
+  //   // console.log(value, size.width / 10)
+
+  //   console.log('unsubscribeMove', value)
+
+  //   // return false
+
+  //   if (value <= (size.width / 10) + 50) {
+
+  //     if ($gravity <  rand || $gravity + 50 > rand + gap) {
+  //       console.log('gameOver')
+  //       game.stop();
+  //       dispatch('gameOver')
+  //       // $move = value;
+  //       // return false
+  //     }
+
+  //     // removed = true;
+  //   }
+
+  //   if (value <= -60) {
+      
+  //     column.remove();
+  //     createCol = true;
+  //     // $move = size.width;
+  //   }
+  // })
+
+
   function runColumn() {    
-    $move = -60;
-    if ($move < -60) removeColumn();
+    // $move = -100;
+    // if ($move < -60) removeColumn();
   }
 
   function removeColumn() {
 
     if (column) {
       column.remove();
-      removed = true;
-      dispatch('removed');
+      // removed = true;
+      // dispatch('removed');
     }
     
   }
@@ -111,10 +196,10 @@
     flex-grow: 1;
   }
 </style>
-{$move}
+{$columnMove}
 
 <div 
-  style="left: {$move}px;"
+  style="left: {$columnMove}px;"
   class="column"
   bind:this={column}>
   <div 
@@ -126,6 +211,6 @@
     class="inner bottom"> </div>
 
 </div>
-{#if removed}
+{#if createCol}
   <svelte:self />
 {/if}
