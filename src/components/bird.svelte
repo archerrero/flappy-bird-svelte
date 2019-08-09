@@ -1,38 +1,30 @@
 <script>
 	import { beforeUpdate, createEventDispatcher } from 'svelte';
-  import { gravity, size, game } from '../store';
+  import { bird, game, bound } from '../store';
 
-  const dispatch = createEventDispatcher();
-  
-  let _gravity;
-  let _game;
+  import { tweened } from 'svelte/motion';
+  import { linear } from 'svelte/easing';
 
-  const unSubscribeGravity = gravity.subscribe(c => {
-    _gravity = c;
-    if (!_game) return 
 
-    if (c > size.height || c < 0 ) {
-      console.log('123')    
-      gravity.stop()  
-		  game.stop();
-      dispatch('gameOver')
-    }
+  const motion = tweened($bird.bottom, {
+    duration: 100,
+	  easing: linear
   })
 
-  const unSubscribeGame = game.subscribe(value => {
-    _game = value;
-    if (value) {
-      gravity.run();
-    } else {
-		  game.stop();
-      gravity.set(size.height / 2);
-    }
+  const subscribeBird = bird.subscribe(value => {
+    $motion = value.bottom;
   })
 
+  const subscribeMotion = motion.subscribe(value => {
+    if (value <= 0) game.end();
+    if (value + 50 >= bound.height) game.end();
+  })
 
   function onKeypress() {
-    gravity.jump();
+    bird.jump();
   }
+
+
 </script>
 
 <style>
@@ -48,6 +40,7 @@
 	on:keypress|once="{onKeypress}" />
 
 <div 
-  style="bottom: {_gravity}px; left: {size.width / 10}px">
-  {_gravity}
+  style="bottom: {$motion}px; left: {$bird.left}px">
+  {$bird.left} /
+  {$bird.bottom}
 </div>

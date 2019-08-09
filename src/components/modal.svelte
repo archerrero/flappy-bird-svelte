@@ -7,12 +7,10 @@
 
   let modal;
   let modalSize;
-
   let width;
   let height;
 
   onMount(() => {
-
     modalSize = modal.getBoundingClientRect();
     width = modalSize.width
     height = modalSize.height;

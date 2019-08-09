@@ -1,169 +1,92 @@
 <script>
 	import { beforeUpdate, onMount, onDestroy, createEventDispatcher } from 'svelte';
-  import { gravity, size, game } from '../store';
+  import { column, bound, bird, game } from '../store';
+
   import { tweened } from 'svelte/motion';
   import { linear } from 'svelte/easing';
 
-  // export let game = false;
-
-  // TODO: clear code
-  const dispatch = createEventDispatcher();
-
-  let column;
 
 
-  // console.log(size.width)
-  let columnMove = tweened(size.width, {
-		duration: 5000,
-		easing: linear
-  });
-
-  const unSubscribeGame = game.subscribe(value => {
-    console.log('game column',value)
-
-    if (value) {
-      $columnMove = -column.getBoundingClientRect().width;
-    } else {
-      columnMove = tweened(size.width, {
-        duration: 5000,
-        easing: linear
-      });
-    }
-  })
-
-  const unsubscribeMove = columnMove.subscribe(value => {
-
-    console.log('columnMove', value, )
-
-    if (value <= (size.width / 10) + 50) {
-
-    }
-
-    
-    // console.log(value, size.width / 10)
-
-    // console.log('unsubscribeMove', value)
-
-    // // return false
-
-    // if (value <= (size.width / 10) + 50) {
-
-    //   if ($gravity <  rand || $gravity + 50 > rand + gap) {
-    //     console.log('gameOver')
-    //     game.stop();
-    //     dispatch('gameOver')
-    //     // $move = value;
-    //     // return false
-    //   }
-
-    //   // removed = true;
-    // }
-
-    // if (value <= -60) {
-      
-    //   column.remove();
-    //   createCol = true;
-    //   // $move = size.width;
-    // }
-  })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  let gameOver = false;
+  // TODO: Do it again
+  console.log('new')
+  
+  let _column;
+  let gap = 200;
+  let rand = 0
+  let createCol = false;
+  let _timer;
+  let time = 2000;
   let top;
   let bottom;
-  let left;
-  let timer;
-  
-  let removed = false;
-  let gap = 200;
-  let rand = randomInteger(1, size.height - gap);
+  let testArr = []
 
-  let createCol = false;
+  const motion = tweened(bound.width - 100, {
+    duration: time,
+	  easing: linear
+  })
 
-	// let move = tweened(size.width, {
-	// 	duration: 5000,
-	// 	easing: linear
-  // });
+  const columnSubscribe = column.subscribe(value => {
+    // $motion = value;
+  })
 
-  // const unSubscribeGame = game.subscribe(value => {
-  //   console.log('game column',value)
+  beforeUpdate(() => {
+    console.log('123')
+  })
 
-  //   if (value) {
-  //     // removeColumn() 
-  //     console.log('123123123')
-  //     $move = size.width;
-  //     runColumn();
-  //   } else {
-  //     // $move = 0 ;
-	// 	  // game.stop();
-  //     // removeColumn();
-  //     // $ move = null
-  //   }
-  //     // column.remove();
-  // })
+  onMount(()=> {
+    console.error('onMount; rand: ', rand)
+    console.log( _column)
+    $motion = 0;
+  })
 
-  // const unsubscribeMove = move.subscribe(value => {
-  //   // console.log(value, size.width / 10)
+  const gameSubscribe = game.subscribe(value => {
+    // console.log(value)
+    if (value) {
 
-  //   console.log('unsubscribeMove', value)
+      console.log('_column', createCol, _column)
 
-  //   // return false
-
-  //   if (value <= (size.width / 10) + 50) {
-
-  //     if ($gravity <  rand || $gravity + 50 > rand + gap) {
-  //       console.log('gameOver')
-  //       game.stop();
-  //       dispatch('gameOver')
-  //       // $move = value;
-  //       // return false
-  //     }
-
-  //     // removed = true;
-  //   }
-
-  //   if (value <= -60) {
+      if(_column) {
+        _column.remove();
+        createCol = true 
+      }
       
-  //     column.remove();
-  //     createCol = true;
-  //     // $move = size.width;
-  //   }
-  // })
-
-
-  function runColumn() {    
-    // $move = -100;
-    // if ($move < -60) removeColumn();
-  }
-
-  function removeColumn() {
-
-    if (column) {
-      column.remove();
-      // removed = true;
-      // dispatch('removed');
+      $motion = -100;
+    } else {
+      clearInterval(_timer)
+      $motion = bound.width;
     }
-    
-  }
+  })
 
-  function randomInteger(min, max) {
+  const motionSubscribe = motion.subscribe(value => {
+
+// createCol = false;
+    if(value < $bird.left + 50 && value > $bird.left) {
+      console.log('first if', rand)
+      // createCol = true;
+      if ($bird.bottom < rand || $bird.bottom + 50 > rand + gap) {
+        // console.group();
+        // console.warn('secons if;', 'rand: ', rand, '$bird.bottom: ', $bird.bottom, 'rand + gap: ', rand + gap)
+        // console.warn('$bird.bottom < rand ', $bird.bottom < rand )
+        // console.warn('$bird.bottom + 50 > rand + gap ', $bird.bottom + 50 > rand + gap )
+        // console.groupEnd();
+
+        // console.log( _column)
+        game.end();
+        $motion = value
+        // clearInterval(_timer)
+        // // $motion = tweened();
+      }
+
+    }
+
+    if (value <= -100) _column.remove();
+    
+  })
+
+  function random(min, max) {
     let rand = min + Math.random() * (max + 1 - min);
     return Math.floor(rand);
   }
-
 </script>
 
 <style>
@@ -196,9 +119,27 @@
     flex-grow: 1;
   }
 </style>
-{$columnMove}
 
-<div 
+
+
+  <div 
+    style="left: {$motion}px;"
+    class="column"
+    bind:this={_column}>
+
+    <div 
+      bind:this={top}
+      class="inner top"></div>
+
+    <div 
+      bind:this={bottom}
+      style="height: {rand}px; margin-top: {gap}px"
+      class="inner bottom"> 
+      {rand}
+      </div>
+  </div>
+
+<!-- <div 
   style="left: {$columnMove}px;"
   class="column"
   bind:this={column}>
@@ -213,4 +154,4 @@
 </div>
 {#if createCol}
   <svelte:self />
-{/if}
+{/if} -->
