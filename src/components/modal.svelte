@@ -1,7 +1,8 @@
 <script>
 	import { onMount, onDestroy, createEventDispatcher } from 'svelte';
-  export let noButtons = false,
-             code = null;
+  export let text,
+             agreeText,
+             disagreeText;
 
   const dispatch = createEventDispatcher();
 
@@ -16,10 +17,12 @@
     height = modalSize.height;
   })
 
-  function onKeypress(e) {
-    if(e.code == code) {
-      dispatch('agree')
-    }
+  function onAgree() {
+    dispatch('agree')
+  }
+
+  function onDisagree() {
+    dispatch('disagree')
   }
 
 </script>
@@ -33,21 +36,44 @@
     padding: 16px;
     background-color: #fff;
   }
+
+  .modal--buttons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  button {
+    cursor: pointer;
+    border: 3px solid rgb(12, 12, 12);
+  }
+
+  button + button {
+    margin-left: 16px;
+  }
 </style>
-
-
-<svelte:body
-	on:keypress|once="{onKeypress}" />
 
 <div 
   bind:this={modal}
   style="margin-left: -{width / 2}px; margin-top: -{height / 2}px"
   class="modal">
 
-  <slot></slot>
+  <p>{text}</p>
 
-  {#if !noButtons}
-    <button></button>
-    <button></button>
-  {/if}
+  <div class="modal--buttons">
+    
+    {#if agreeText}
+      <button
+        on:click={onAgree}>
+        {agreeText}
+      </button>
+    {/if}
+
+    {#if disagreeText}
+      <button
+        on:click={onDisagree}>
+        {disagreeText}
+      </button>
+    {/if}
+  </div>
+
 </div>

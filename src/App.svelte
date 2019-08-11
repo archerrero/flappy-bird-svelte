@@ -8,15 +8,20 @@
 	game.init();
 
 	let isModalShown = true;
-	let modalText = 'Press SPACE to start';
+	let modalData = {
+		text: 'Press HERE to start',
+		agreeText: 'here'
+	}
 	let _timer;
-	let testArr = [];
+	let columns = [];
+
+	let backgroundX = 0;
 
 	const gameSubscribe = game.subscribe(value => {
-		console.log('game.subscribe app', value)
-
 		if (value) {
+			columns = Array(0);
 			startTimer()
+			moveBackground()
 		} else {
 			isModalShown = true;
 			clearInterval(_timer)
@@ -26,30 +31,20 @@
 	function onAgreeGameStart() {
 		isModalShown = false;
 		game.start();
-		console.log('game.start()')
 	}
 
 	function startTimer() {
 		_timer = setInterval(() => {
-			testArr = [...testArr, Column]
-			console.log(testArr)
-		}, 1000);
+			columns = [...columns, Column]
+			// console.log(columns)
+		}, 2000);
 	}
 
-	// let modalText = 'Press SPACE to start';
-
-	// onMount(() => {
-	// 	gravity.init(size.height / 2)
-	// })
-
-	// function onGameOver() {
-
-	// 	console.log(isModalShown)
-	// 	game.stop();
-	// 	isModalShown = true;
-	// 	modalText = 'To start game press SPACE';
-
-	// }
+	function moveBackground() {
+		setInterval(() => {
+			backgroundX -= 1;
+		}, 50);
+	}
 
 </script>
 
@@ -59,22 +54,28 @@
 		position: relative;
 		width: 100%;
 		height: 100%;
+		background-image: repeating-radial-gradient(#b2ebf2 10px, #e0f7fa 20px);
+    background-size: 100px 100px;
+    background-position: 0 0px;
 	}
 </style>
 
-<div class="wrapper">
+<div 
+	class="wrapper"
+	style="background-position: {backgroundX}px 0px">
+
+	{columns.length}
 	<Bird />
 
-		{#each testArr as arr}
-			<svelte:component this={arr} />
-		{/each}
+	{#each columns as arr}
+		<svelte:component this={arr} />
+	{/each}
 
   {#if isModalShown}
 		<Modal 
-			noButtons
-			code="Space"
+			{...modalData}
 			on:agree={onAgreeGameStart}			
-			> {modalText} </Modal>
+			/>
 	{/if}
 </div>
 

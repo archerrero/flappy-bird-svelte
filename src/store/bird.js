@@ -1,17 +1,15 @@
-import { readable, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 
 const bird = createBird();
 
 function createBird() {
   const { subscribe, set, update } = writable({});
-  let position = {}
-  let gameOver = false;
-  let bound = {};
+  let position = {};
+  let _interval;
   
   return {
     subscribe,
     setPosition: (bound) => {
-      bound = bound;
       position = {
         bottom: bound.height / 2,
         left: bound.width / 10,
@@ -26,27 +24,26 @@ function createBird() {
       position.bottom -= n;
       update(position => position)
     },
-
-    start: () => {
-      gameOver = false;
-      this.setPosition(bound)
+    start: () => {      
+			let coefficient = .1;
+      let initSpeed = Math.PI;
+      
+      _interval = setInterval(() => {
+				bird.gravity(initSpeed);
+				initSpeed += coefficient
+			}, 10);     
     },
     jump: () => {
-      if (!gameOver) {
-        position.bottom += 100;
-        update(position => position)
-      }
+      bird.stop();
+      position.bottom += 100;
+      update(position => position)
+      bird.start();
     },
-    die: () => {},
-    
     stop: () => {
-      gameOver = true;
+			clearInterval(_interval);
     },
-
-
     getPosition: () => position,
   }
-  
 }
 
 export default bird;
