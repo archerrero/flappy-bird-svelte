@@ -14,6 +14,7 @@ body {
 	font-family: 'Press Start 2P', cursive;
 	padding: 0;
 	margin: 0;
+	background-image: linear-gradient(#e0f7fa, #06b4ca);
 	
 }
 * {

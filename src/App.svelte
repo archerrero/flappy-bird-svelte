@@ -16,6 +16,7 @@
 	let columns = [];
 
 	let backgroundX = 0;
+	let bestResults;
 
 	const gameSubscribe = game.subscribe(value => {
 		if (value) {
@@ -25,6 +26,7 @@
 		} else {
 			isModalShown = true;
 			clearInterval(_timer)
+			bestResults = columns.length;
 		}
 	})
 
@@ -54,17 +56,41 @@
 		position: relative;
 		width: 100%;
 		height: 100%;
-		background-image: repeating-radial-gradient(#b2ebf2 10px, #e0f7fa 20px);
-    background-size: 100px 100px;
-    background-position: 0 0px;
+		background-image: url(./../public/seaweed.svg) , repeating-radial-gradient(rgba(178, 235, 242, .5) 10px, rgba(224, 247, 250, .5) 20px) ;
+    background-size: 300px 300px, 100px 100px;
+		background-position: 100% 100%, 0 0px;
+		background-repeat: repeat-x, repeat;
+	}
+	.top-info {
+		padding: 16px;
+		display: flex;
+    align-items: center;
+    justify-content: flex-end;
+	}
+	.top-info--count {
+		font-size: 2rem;	
+		color: #fff;
+		text-shadow: 2px 2px 0px #000, -2px 2px 0px #000, 2px -2px 0px #000, -2px -2px 0px #000;
+	}
+	.top-info--best {
+		color: #fff;
+		text-shadow: 2px 2px 0px #FF5023, -2px 2px 0px #FF5023, 2px -2px 0px #FF5023, -2px -2px 0px #FF5023;
+		margin-right: 16px;
 	}
 </style>
 
 <div 
 	class="wrapper"
-	style="background-position: {backgroundX}px 0px">
-
-	{columns.length}
+	style="background-position: {backgroundX * 2}px 100%, {backgroundX}px 0px">
+	<div class="top-info">
+		{#if columns.length > bestResults}
+			<span 
+				class="top-info--best"
+				style="opacity: {backgroundX % 5 ? .5 : 1}">BEST RECORD</span>
+		{/if}
+		<span class="top-info--count">{columns.length}</span>
+	</div>
+	
 	<Bird />
 
 	{#each columns as arr}

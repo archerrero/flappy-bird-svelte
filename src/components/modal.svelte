@@ -32,9 +32,11 @@
     position: fixed;
     top: 50%;
     left: 50%;
+    min-width: 300px;
     border: 3px solid rgb(12, 12, 12);
     padding: 16px;
     background-color: #fff;
+    transform: translate(-50%, -50%);
   }
 
   .modal--buttons {
@@ -54,7 +56,6 @@
 
 <div 
   bind:this={modal}
-  style="margin-left: -{width / 2}px; margin-top: -{height / 2}px"
   class="modal">
 
   <p>{text}</p>

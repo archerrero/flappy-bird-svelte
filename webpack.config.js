@@ -42,6 +42,10 @@ module.exports = {
 					prod ? MiniCssExtractPlugin.loader : 'style-loader',
 					'css-loader'
 				]
+			},
+			{
+				test: /\.(png|jpg|svg)$/,
+				loader: 'url-loader'
 			}
 		]
 	},

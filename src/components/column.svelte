@@ -23,8 +23,8 @@
     
   const motionSubscribe = motion.subscribe(value => {
 
-    if(value < $bird.left + 50 && value > $bird.left) {
-      if ($bird.bottom < rand || $bird.bottom + 50 > rand + gap) {
+    if(value < $bird.left + 28 && value > $bird.left) {
+      if ($bird.bottom < rand || $bird.bottom + 28 > rand + gap) {
         game.end();
         $motion = value
       }
